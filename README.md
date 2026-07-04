@@ -176,12 +176,6 @@ tests/
 
 **riodarmawanto659-lab**
 
-Generated automatically using:
-
-```text
-Ilham Boilerplate 2026
-```
-
 ---
 
 ## 🎯 Quote of The Project
