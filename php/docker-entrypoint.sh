@@ -213,8 +213,8 @@ echo "🗃️ Running migrations..."
 php artisan migrate --force
 
 # Step 8: Run custom project init command
-echo "🚀 Running project:init..."
-php artisan project:init || true
+#echo "🚀 Running project:init..."
+#php artisan project:init || true
 
 # Step 9: Create storage symbolic link
 echo "🔗 Creating storage link..."
