@@ -23,7 +23,37 @@ class DetailPesananResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('pesanan_id')
+                    ->relationship('pesanan', 'id')
+                    ->required(),
+                Forms\Components\Select::make('layanan_laundry_id')
+                    ->relationship('layananLaundry', 'id')
+                    ->required(),
+                Forms\Components\TextInput::make('nama_layanan')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('tipe_layanan')
+                    ->required(),
+                Forms\Components\TextInput::make('berat')
+                    ->numeric()
+                    ->default(null),
+                Forms\Components\TextInput::make('jumlah_item')
+                    ->numeric()
+                    ->default(null),
+                Forms\Components\TextInput::make('satuan_hitung')
+                    ->required()
+                    ->maxLength(255)
+                    ->default('kg'),
+                Forms\Components\TextInput::make('harga_satuan')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\TextInput::make('subtotal')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\Textarea::make('catatan')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -31,7 +61,37 @@ class DetailPesananResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('pesanan.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('layananLaundry.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nama_layanan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tipe_layanan'),
+                Tables\Columns\TextColumn::make('berat')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('jumlah_item')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('satuan_hitung')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('harga_satuan')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('subtotal')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

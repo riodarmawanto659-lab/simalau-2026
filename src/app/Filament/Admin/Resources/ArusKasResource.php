@@ -23,7 +23,31 @@ class ArusKasResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('pesanan_id')
+                    ->relationship('pesanan', 'id')
+                    ->default(null),
+                Forms\Components\Select::make('pembayaran_id')
+                    ->relationship('pembayaran', 'id')
+                    ->default(null),
+                Forms\Components\Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->default(null),
+                Forms\Components\TextInput::make('jenis')
+                    ->required(),
+                Forms\Components\TextInput::make('kategori')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('judul')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('nominal')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\DatePicker::make('tanggal')
+                    ->required(),
+                Forms\Components\Textarea::make('keterangan')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -31,7 +55,34 @@ class ArusKasResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('pesanan.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('pembayaran.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('jenis'),
+                Tables\Columns\TextColumn::make('kategori')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('judul')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nominal')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tanggal')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

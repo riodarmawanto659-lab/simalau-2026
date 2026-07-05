@@ -23,7 +23,25 @@ class PengingatPengambilanResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('pesanan_id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('pelanggan_id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\DateTimePicker::make('tanggal_siap_diambil')
+                    ->required(),
+                Forms\Components\DateTimePicker::make('tanggal_masuk_pengingat')
+                    ->required(),
+                Forms\Components\TextInput::make('jumlah_hari_tertahan')
+                    ->required()
+                    ->numeric()
+                    ->default(3),
+                Forms\Components\TextInput::make('status_pengingat')
+                    ->required(),
+                Forms\Components\DateTimePicker::make('tanggal_dihubungi'),
+                Forms\Components\Textarea::make('catatan')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -31,7 +49,33 @@ class PengingatPengambilanResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('pesanan_id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('pelanggan_id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tanggal_siap_diambil')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tanggal_masuk_pengingat')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('jumlah_hari_tertahan')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('status_pengingat'),
+                Tables\Columns\TextColumn::make('tanggal_dihubungi')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

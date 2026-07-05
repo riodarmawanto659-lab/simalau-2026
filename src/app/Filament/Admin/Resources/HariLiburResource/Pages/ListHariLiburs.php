@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Admin\Resources\HariLibuResource\Pages;
+namespace App\Filament\Admin\Resources\HariLiburResource\Pages;
 
-use App\Filament\Admin\Resources\HariLibuResource;
+use App\Filament\Admin\Resources\HariLiburResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListHariLibus extends ListRecords
+class ListHariLiburs extends ListRecords
 {
-    protected static string $resource = HariLibuResource::class;
+    protected static string $resource = HariLiburResource::class;
 
     protected function getHeaderActions(): array
     {

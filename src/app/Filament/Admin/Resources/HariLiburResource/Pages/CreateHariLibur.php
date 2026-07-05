@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Filament\Admin\Resources\HariLibuResource\Pages;
+namespace App\Filament\Admin\Resources\HariLiburResource\Pages;
 
-use App\Filament\Admin\Resources\HariLibuResource;
+use App\Filament\Admin\Resources\HariLiburResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateHariLibu extends CreateRecord
+class CreateHariLibur extends CreateRecord
 {
-    protected static string $resource = HariLibuResource::class;
+    protected static string $resource = HariLiburResource::class;
 }

@@ -23,7 +23,43 @@ class PesananResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('pelanggan_id')
+                    ->relationship('pelanggan', 'id')
+                    ->required(),
+                Forms\Components\TextInput::make('nomor_pesanan')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\DateTimePicker::make('tanggal_masuk'),
+                Forms\Components\DateTimePicker::make('estimasi_selesai'),
+                Forms\Components\DateTimePicker::make('tanggal_siap_diambil'),
+                Forms\Components\DateTimePicker::make('tanggal_selesai'),
+                Forms\Components\TextInput::make('metode_penyerahan')
+                    ->required(),
+                Forms\Components\Textarea::make('alamat_penjemputan')
+                    ->columnSpanFull(),
+                Forms\Components\Textarea::make('catatan_pelanggan')
+                    ->columnSpanFull(),
+                Forms\Components\Textarea::make('catatan_admin')
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('status_pesanan')
+                    ->required(),
+                Forms\Components\TextInput::make('status_pembayaran')
+                    ->required(),
+                Forms\Components\TextInput::make('subtotal')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\TextInput::make('diskon')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\TextInput::make('total_biaya')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\TextInput::make('urutan_antrian')
+                    ->numeric()
+                    ->default(null),
             ]);
     }
 
@@ -31,7 +67,46 @@ class PesananResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('pelanggan.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nomor_pesanan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tanggal_masuk')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('estimasi_selesai')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tanggal_siap_diambil')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tanggal_selesai')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('metode_penyerahan'),
+                Tables\Columns\TextColumn::make('status_pesanan'),
+                Tables\Columns\TextColumn::make('status_pembayaran'),
+                Tables\Columns\TextColumn::make('subtotal')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('diskon')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_biaya')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('urutan_antrian')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

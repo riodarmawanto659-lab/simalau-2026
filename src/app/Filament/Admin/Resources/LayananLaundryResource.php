@@ -23,7 +23,36 @@ class LayananLaundryResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('kategori_layanan_id')
+                    ->relationship('kategoriLayanan', 'id')
+                    ->required(),
+                Forms\Components\TextInput::make('nama_layanan')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('slug')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('deskripsi')
+                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('tipe_layanan')
+                    ->required(),
+                Forms\Components\TextInput::make('tarif')
+                    ->required()
+                    ->numeric()
+                    ->default(0.00),
+                Forms\Components\TextInput::make('estimasi_hari')
+                    ->required()
+                    ->numeric()
+                    ->default(1),
+                Forms\Components\TextInput::make('minimal_order')
+                    ->numeric()
+                    ->default(null),
+                Forms\Components\TextInput::make('satuan_hitung')
+                    ->required()
+                    ->maxLength(255)
+                    ->default('kg'),
+                Forms\Components\TextInput::make('status')
+                    ->required(),
             ]);
     }
 
@@ -31,7 +60,34 @@ class LayananLaundryResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('kategoriLayanan.id')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nama_layanan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('slug')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tipe_layanan'),
+                Tables\Columns\TextColumn::make('tarif')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('estimasi_hari')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('minimal_order')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('satuan_hitung')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
