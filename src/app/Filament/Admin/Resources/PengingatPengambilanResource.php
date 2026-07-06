@@ -4,11 +4,13 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\PengingatPengambilanResource\Pages;
 use App\Models\PengingatPengambilan;
+use App\Services\LaundryOrderService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PengingatPengambilanResource extends Resource
 {
@@ -25,6 +27,13 @@ class PengingatPengambilanResource extends Resource
     protected static ?string $pluralModelLabel = 'Pengingat Pengambilan';
 
     protected static ?int $navigationSort = 4;
+
+    public static function getEloquentQuery(): Builder
+    {
+        app(LaundryOrderService::class)->syncDueReminders();
+
+        return parent::getEloquentQuery();
+    }
 
     public static function form(Form $form): Form
     {

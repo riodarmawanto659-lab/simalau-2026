@@ -7,7 +7,7 @@ ENV COMPOSER_MEMORY_LIMIT='-1'
 
 # Install dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libmemcached-dev iputils-ping telnet netcat-openbsd \
+    curl libmemcached-dev iputils-ping telnet netcat-openbsd \
     libmcrypt-dev libreadline-dev libgmp-dev libzip-dev \
     libpq-dev libjpeg-dev libpng-dev libfreetype6-dev \
     libssl-dev openssh-server libmagickwand-dev git cron \

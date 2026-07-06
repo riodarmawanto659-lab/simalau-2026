@@ -7,6 +7,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -62,8 +63,13 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         }
     }
 
+    public function pelanggan(): HasOne
+    {
+        return $this->hasOne(Pelanggan::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return $this->hasAnyRole(['super_admin', 'admin', 'administrator']);
     }
 }

@@ -61,6 +61,8 @@ class AdminPanelProvider extends PanelProvider
                 for: 'App\\Filament\\Admin\\Widgets'
             )
             ->widgets([
+                \App\Filament\Admin\Widgets\LaundryStatsOverview::class,
+                \App\Filament\Admin\Widgets\ActiveQueueTable::class,
                 \Awcodes\Overlook\Widgets\OverlookWidget::class,
             ])
             ->navigationGroups([

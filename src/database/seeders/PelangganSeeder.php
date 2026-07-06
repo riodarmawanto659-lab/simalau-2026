@@ -6,6 +6,7 @@ use App\Models\Pelanggan;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class PelangganSeeder extends Seeder
 {
@@ -14,7 +15,16 @@ class PelangganSeeder extends Seeder
      */
     public function run(): void
     {
+        Role::firstOrCreate(['name' => 'pelanggan']);
+
         $pelanggans = [
+            [
+                'nama_lengkap' => 'Pelanggan Demo',
+                'email' => 'pelanggan@example.com',
+                'nomor_whatsapp' => '081200000001',
+                'alamat' => 'Jl. Simalau No. 1, Tangerang',
+                'password' => 'password',
+            ],
             [
                 'nama_lengkap' => 'Budi Santoso',
                 'email' => 'budi@example.com',
@@ -46,6 +56,7 @@ class PelangganSeeder extends Seeder
                     'password' => Hash::make($data['password']),
                 ]
             );
+            $user->assignRole('pelanggan');
 
             Pelanggan::updateOrCreate(
                 ['email' => $data['email']],

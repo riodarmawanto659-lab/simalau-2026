@@ -27,6 +27,25 @@ class DetailPesanan extends Model
         'subtotal' => 'decimal:2',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (DetailPesanan $detailPesanan): void {
+            $quantity = $detailPesanan->tipe_layanan === 'kiloan'
+                ? (float) $detailPesanan->berat
+                : (int) $detailPesanan->jumlah_item;
+
+            $detailPesanan->subtotal = max($quantity, 0) * (float) $detailPesanan->harga_satuan;
+        });
+
+        static::saved(function (DetailPesanan $detailPesanan): void {
+            $detailPesanan->pesanan?->refreshTotals();
+        });
+
+        static::deleted(function (DetailPesanan $detailPesanan): void {
+            $detailPesanan->pesanan?->refreshTotals();
+        });
+    }
+
     public function pesanan(): BelongsTo
     {
         return $this->belongsTo(Pesanan::class);

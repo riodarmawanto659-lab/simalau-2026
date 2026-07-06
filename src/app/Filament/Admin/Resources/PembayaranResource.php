@@ -54,9 +54,12 @@ class PembayaranResource extends Resource
                         Forms\Components\TextInput::make('nomor_pembayaran')
                             ->label('Nomor Pembayaran')
                             ->placeholder('Contoh: PAY-20260705-0001')
+                            ->default(fn (): string => Pembayaran::generateNomorPembayaran())
                             ->required()
                             ->maxLength(255)
-                            ->unique(ignoreRecord: true),
+                            ->unique(ignoreRecord: true)
+                            ->disabledOn('edit')
+                            ->dehydrated(true),
 
                         Forms\Components\Select::make('metode_pembayaran')
                             ->label('Metode Pembayaran')

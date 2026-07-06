@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\PesananResource\Pages;
 use App\Models\Pesanan;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -44,9 +45,12 @@ class PesananResource extends Resource
                         Forms\Components\TextInput::make('nomor_pesanan')
                             ->label('Nomor Pesanan')
                             ->placeholder('Contoh: LDR-20260705-0001')
+                            ->default(fn (): string => Pesanan::generateNomorPesanan())
                             ->required()
                             ->maxLength(255)
-                            ->unique(ignoreRecord: true),
+                            ->unique(ignoreRecord: true)
+                            ->disabledOn('edit')
+                            ->dehydrated(true),
 
                         Forms\Components\Select::make('metode_penyerahan')
                             ->label('Metode Penyerahan')
@@ -63,6 +67,7 @@ class PesananResource extends Resource
                             ->label('Urutan Antrean FIFO')
                             ->helperText('Urutan pengerjaan berdasarkan waktu masuk. Angka lebih kecil diproses lebih dulu.')
                             ->numeric()
+                            ->readOnly()
                             ->default(null),
                     ])
                     ->columns(2),
@@ -309,6 +314,55 @@ class PesananResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->label('Kelola'),
+
+                Tables\Actions\Action::make('konfirmasi')
+                    ->label('Konfirmasi')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->visible(fn (Pesanan $record): bool => $record->status_pesanan === 'menunggu_konfirmasi')
+                    ->action(function (Pesanan $record): void {
+                        $record->updateStatus('menunggu_proses', auth()->user(), 'Pesanan sudah diverifikasi admin.');
+
+                        Notification::make()
+                            ->title('Pesanan masuk antrean FIFO')
+                            ->success()
+                            ->send();
+                    }),
+
+                Tables\Actions\Action::make('status_berikutnya')
+                    ->label('Status Berikutnya')
+                    ->icon('heroicon-o-arrow-right-circle')
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->visible(fn (Pesanan $record): bool => $record->status_pesanan !== 'menunggu_konfirmasi' && filled($record->nextStatus()))
+                    ->action(function (Pesanan $record): void {
+                        $nextStatus = $record->nextStatus();
+
+                        if ($nextStatus) {
+                            $record->updateStatus($nextStatus, auth()->user());
+                        }
+
+                        Notification::make()
+                            ->title('Status cucian diperbarui')
+                            ->success()
+                            ->send();
+                    }),
+
+                Tables\Actions\Action::make('batalkan')
+                    ->label('Batalkan')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->visible(fn (Pesanan $record): bool => in_array($record->status_pesanan, ['menunggu_konfirmasi', 'menunggu_proses'], true))
+                    ->action(function (Pesanan $record): void {
+                        $record->forceFill(['status_pesanan' => 'dibatalkan'])->save();
+
+                        Notification::make()
+                            ->title('Pesanan dibatalkan')
+                            ->warning()
+                            ->send();
+                    }),
 
                 Tables\Actions\DeleteAction::make()
                     ->label('Hapus'),

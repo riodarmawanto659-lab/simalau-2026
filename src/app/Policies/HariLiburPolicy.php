@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\HariLibu;
+use App\Models\HariLibur;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class HariLibuPolicy
+class HariLiburPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class HariLibuPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_hari::libu');
+        return $user->can('view_any_hari::libur');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, HariLibu $hariLibu): bool
+    public function view(User $user, HariLibur $hariLibur): bool
     {
-        return $user->can('view_hari::libu');
+        return $user->can('view_hari::libur');
     }
 
     /**
@@ -31,23 +31,23 @@ class HariLibuPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_hari::libu');
+        return $user->can('create_hari::libur');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, HariLibu $hariLibu): bool
+    public function update(User $user, HariLibur $hariLibur): bool
     {
-        return $user->can('update_hari::libu');
+        return $user->can('update_hari::libur');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, HariLibu $hariLibu): bool
+    public function delete(User $user, HariLibur $hariLibur): bool
     {
-        return $user->can('delete_hari::libu');
+        return $user->can('delete_hari::libur');
     }
 
     /**
@@ -55,13 +55,13 @@ class HariLibuPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_hari::libu');
+        return $user->can('delete_any_hari::libur');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, HariLibu $hariLibu): bool
+    public function forceDelete(User $user, HariLibur $hariLibur): bool
     {
         return $user->can('{{ ForceDelete }}');
     }
@@ -77,7 +77,7 @@ class HariLibuPolicy
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, HariLibu $hariLibu): bool
+    public function restore(User $user, HariLibur $hariLibur): bool
     {
         return $user->can('{{ Restore }}');
     }
@@ -93,7 +93,7 @@ class HariLibuPolicy
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, HariLibu $hariLibu): bool
+    public function replicate(User $user, HariLibur $hariLibur): bool
     {
         return $user->can('{{ Replicate }}');
     }

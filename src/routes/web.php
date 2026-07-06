@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomerDashboardController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PublicController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
-use Illuminate\Support\Facades\Response;
 
 /* NOTE: Do Not Remove
 / Livewire asset handling if using sub folder in domain
@@ -18,6 +21,30 @@ Livewire::setScriptRoute(function ($handle) {
 /*
 / END
 */
-Route::get('/', function () {
-    return view('welcome');
+
+Route::get('/', [PublicController::class, 'home'])->name('home');
+Route::get('/layanan', [PublicController::class, 'services'])->name('services.index');
+Route::get('/layanan/{layananLaundry:slug}', [PublicController::class, 'serviceDetail'])->name('services.show');
+Route::get('/cek-status', [PublicController::class, 'status'])->name('status.form');
+Route::post('/cek-status', [PublicController::class, 'checkStatus'])->name('status.check');
+
+Route::middleware('guest')->group(function (): void {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.store');
+    Route::get('/registrasi', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/registrasi', [AuthController::class, 'register'])->name('register.store');
+});
+
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
+
+Route::middleware('auth')->prefix('dashboard')->name('customer.')->group(function (): void {
+    Route::get('/', [CustomerDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/pesanan', [CustomerDashboardController::class, 'orders'])->name('orders.index');
+    Route::get('/pesanan/buat', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('/pesanan', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('/pesanan/{pesanan}', [CustomerDashboardController::class, 'orderDetail'])->name('orders.show');
+    Route::get('/profil', [CustomerDashboardController::class, 'profile'])->name('profile');
+    Route::put('/profil', [CustomerDashboardController::class, 'updateProfile'])->name('profile.update');
 });

@@ -2,10 +2,9 @@ services:
   php:
     build:
       context: ./php
-    container_name: ${COMPOSE_PROJECT_NAME}_php
-    # Teruskan variabel PROJECT_NAME ke dalam kontainer
+    container_name: ${COMPOSE_PROJECT_NAME:-simalau}_php
     environment:
-      - PROJECT_NAME=${PROJECT_NAME}
+      - PROJECT_NAME=${PROJECT_NAME:-simalau}
       - XDEBUG=${XDEBUG:-false}
     volumes:
       - ./src:/var/www/html
@@ -15,7 +14,7 @@ services:
   nginx:
     build:
       context: ./nginx
-    container_name: ${COMPOSE_PROJECT_NAME}_nginx
+    container_name: ${COMPOSE_PROJECT_NAME:-simalau}_nginx
     ports:
       - "443:443"
       - "80:80"
@@ -27,7 +26,7 @@ services:
       - php
   db:
     image: mariadb:10.11
-    container_name: ${COMPOSE_PROJECT_NAME}_db
+    container_name: ${COMPOSE_PROJECT_NAME:-simalau}_db
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
@@ -38,7 +37,7 @@ services:
       - "13306:3306"
     environment:
       # Database ini akan dibuat saat kontainer pertama kali dijalankan
-      MYSQL_DATABASE: ${PROJECT_NAME}
+      MYSQL_DATABASE: ${PROJECT_NAME:-simalau}
       MYSQL_ROOT_PASSWORD: p455w0rd
     volumes:
       - ./db/conf.d:/etc/mysql/conf.d
