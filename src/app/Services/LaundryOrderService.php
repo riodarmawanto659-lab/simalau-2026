@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\DetailPesanan;
 use App\Models\LayananLaundry;
 use App\Models\Pelanggan;
+use App\Models\Pembayaran;
 use App\Models\Pesanan;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,7 @@ class LaundryOrderService
     {
         return DB::transaction(function () use ($user, $data): Pesanan {
             $pelanggan = $this->resolvePelanggan($user);
+
             $layanan = LayananLaundry::query()
                 ->where('status', 'aktif')
                 ->findOrFail($data['layanan_laundry_id']);
@@ -28,7 +30,9 @@ class LaundryOrderService
                 'tanggal_masuk' => now(),
                 'estimasi_selesai' => now()->addDays((int) $layanan->estimasi_hari),
                 'metode_penyerahan' => $data['metode_penyerahan'],
-                'alamat_penjemputan' => $data['metode_penyerahan'] === 'jemput' ? $data['alamat_penjemputan'] : null,
+                'alamat_penjemputan' => $data['metode_penyerahan'] === 'jemput'
+                    ? ($data['alamat_penjemputan'] ?? null)
+                    : null,
                 'catatan_pelanggan' => $data['catatan_pelanggan'] ?? null,
                 'status_pesanan' => 'menunggu_konfirmasi',
                 'status_pembayaran' => 'belum_dibayar',
@@ -50,9 +54,31 @@ class LaundryOrderService
                 'catatan' => $data['catatan_pelanggan'] ?? null,
             ]);
 
-            $pesanan->recordStatusHistory(null, 'menunggu_konfirmasi', null, 'Pesanan dibuat oleh pelanggan dan menunggu konfirmasi admin.');
+            Pembayaran::create([
+                'pesanan_id' => $pesanan->id,
+                'nomor_pembayaran' => Pembayaran::generateNomorPembayaran(),
+                'metode_pembayaran' => 'qris',
+                'total_tagihan' => $pesanan->total_biaya,
+                'nominal_dibayar' => 0,
+                'kembalian' => 0,
+                'status_pembayaran' => 'belum_dibayar',
+                'tanggal_pembayaran' => null,
+                'catatan' => 'Tagihan QRIS otomatis dibuat saat pesanan masuk.',
+            ]);
 
-            return $pesanan->fresh(['detailPesanans.layananLaundry', 'pelanggan']);
+            $pesanan->recordStatusHistory(
+                null,
+                'menunggu_konfirmasi',
+                null,
+                'Pesanan dibuat oleh pelanggan dan menunggu konfirmasi admin.'
+            );
+
+            return $pesanan->fresh([
+                'detailPesanans.layananLaundry',
+                'pelanggan',
+                'pembayaran',
+                'pengingatPengambilan',
+            ]);
         });
     }
 

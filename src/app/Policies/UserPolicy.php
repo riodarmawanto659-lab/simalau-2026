@@ -77,50 +77,6 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can permanently delete.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function forceDelete(User $user): bool
-    {
-        return $user->can('{{ ForceDelete }}');
-    }
-
-    /**
-     * Determine whether the user can permanently bulk delete.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function forceDeleteAny(User $user): bool
-    {
-        return $user->can('{{ ForceDeleteAny }}');
-    }
-
-    /**
-     * Determine whether the user can restore.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function restore(User $user): bool
-    {
-        return $user->can('{{ Restore }}');
-    }
-
-    /**
-     * Determine whether the user can bulk restore.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function restoreAny(User $user): bool
-    {
-        return $user->can('{{ RestoreAny }}');
-    }
-
-    /**
      * Determine whether the user can bulk restore.
      *
      * @param  \App\Models\User  $user
@@ -129,16 +85,5 @@ class UserPolicy
     public function replicate(User $user): bool
     {
         return $user->can('{{ Replicate }}');
-    }
-
-    /**
-     * Determine whether the user can reorder.
-     *
-     * @param  \App\Models\User  $user
-     * @return bool
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('{{ Reorder }}');
     }
 }

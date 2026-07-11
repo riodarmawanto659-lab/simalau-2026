@@ -3,6 +3,8 @@ services:
     build:
       context: ./php
     container_name: ${COMPOSE_PROJECT_NAME:-simalau}_php
+    env_file:
+      - midtrans.env
     environment:
       - PROJECT_NAME=${PROJECT_NAME:-simalau}
       - XDEBUG=${XDEBUG:-false}

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PesananStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -51,6 +52,17 @@ class Pesanan extends Model
         'urutan_antrian',
     ];
 
+    protected $casts = [
+        'tanggal_masuk' => 'datetime',
+        'estimasi_selesai' => 'datetime',
+        'tanggal_siap_diambil' => 'datetime',
+        'tanggal_selesai' => 'datetime',
+        'subtotal' => 'decimal:2',
+        'diskon' => 'decimal:2',
+        'total_biaya' => 'decimal:2',
+        'urutan_antrian' => 'integer',
+    ];
+
     protected static function booted(): void
     {
         static::creating(function (Pesanan $pesanan): void {
@@ -62,6 +74,10 @@ class Pesanan extends Model
             if ($pesanan->status_pesanan !== 'menunggu_konfirmasi' && ! $pesanan->urutan_antrian) {
                 $pesanan->urutan_antrian = static::nextQueueNumber();
             }
+        });
+
+        static::created(function (Pesanan $pesanan): void {
+            $pesanan->ensureContactReminder();
         });
 
         static::updated(function (Pesanan $pesanan): void {
@@ -83,17 +99,6 @@ class Pesanan extends Model
             }
         });
     }
-
-    protected $casts = [
-        'tanggal_masuk' => 'datetime',
-        'estimasi_selesai' => 'datetime',
-        'tanggal_siap_diambil' => 'datetime',
-        'tanggal_selesai' => 'datetime',
-        'subtotal' => 'decimal:2',
-        'diskon' => 'decimal:2',
-        'total_biaya' => 'decimal:2',
-        'urutan_antrian' => 'integer',
-    ];
 
     public function pelanggan(): BelongsTo
     {
@@ -147,7 +152,7 @@ class Pesanan extends Model
 
     public static function nextQueueNumber(): int
     {
-        return ((int) static::max('urutan_antrian')) + 1;
+        return (int) static::whereNotNull('urutan_antrian')->max('urutan_antrian') + 1;
     }
 
     public function nextStatus(): ?string
@@ -176,6 +181,10 @@ class Pesanan extends Model
 
     public function updateStatus(string $targetStatus, ?User $user = null, ?string $catatan = null): bool
     {
+        if ($this->status_pesanan === 'menunggu_konfirmasi' && $targetStatus !== 'dibatalkan' && $this->status_pembayaran !== 'lunas') {
+            return false;
+        }
+
         if (! $this->canTransitionTo($targetStatus)) {
             return false;
         }
@@ -217,23 +226,39 @@ class Pesanan extends Model
         ]);
     }
 
+    public function ensureContactReminder(): void
+    {
+        $this->pengingatPengambilan()->updateOrCreate(
+            ['pesanan_id' => $this->id],
+            [
+                'pelanggan_id' => $this->pelanggan_id,
+                'tanggal_siap_diambil' => $this->tanggal_siap_diambil,
+                'tanggal_masuk_pengingat' => $this->tanggal_masuk ?: now(),
+                'jumlah_hari_tertahan' => $this->tanggal_siap_diambil && $this->tanggal_siap_diambil->isPast()
+                    ? (int) max($this->tanggal_siap_diambil->diffInDays(now()), 0)
+                    : 0,
+                'status_pengingat' => $this->status_pesanan === 'selesai' ? 'selesai' : 'aktif',
+                'catatan' => 'Pengingat kontak otomatis dibuat dari pesanan pelanggan.',
+            ]
+        );
+    }
+
     public function syncPengingatPengambilan(): void
     {
         if ($this->status_pesanan === 'siap_diambil' && $this->tanggal_siap_diambil) {
-            $tanggalMasukPengingat = $this->tanggal_siap_diambil->copy()->addDays(3);
-
-            if (now()->greaterThanOrEqualTo($tanggalMasukPengingat)) {
-                $this->pengingatPengambilan()->updateOrCreate(
-                    ['pesanan_id' => $this->id],
-                    [
-                        'pelanggan_id' => $this->pelanggan_id,
-                        'tanggal_siap_diambil' => $this->tanggal_siap_diambil,
-                        'tanggal_masuk_pengingat' => $tanggalMasukPengingat,
-                        'jumlah_hari_tertahan' => max($this->tanggal_siap_diambil->diffInDays(now()), 3),
-                        'status_pengingat' => 'aktif',
-                    ]
-                );
-            }
+            $this->pengingatPengambilan()->updateOrCreate(
+                ['pesanan_id' => $this->id],
+                [
+                    'pelanggan_id' => $this->pelanggan_id,
+                    'tanggal_siap_diambil' => $this->tanggal_siap_diambil,
+                    'tanggal_masuk_pengingat' => $this->pengingatPengambilan?->tanggal_masuk_pengingat ?: now(),
+                    'jumlah_hari_tertahan' => $this->tanggal_siap_diambil->isPast()
+                        ? (int) max($this->tanggal_siap_diambil->diffInDays(now()), 0)
+                        : 0,
+                    'status_pengingat' => $this->pengingatPengambilan?->status_pengingat ?: 'aktif',
+                    'catatan' => $this->pengingatPengambilan?->catatan ?: 'Pengingat kontak otomatis dibuat dari pesanan pelanggan.',
+                ]
+            );
 
             return;
         }
@@ -259,6 +284,7 @@ class Pesanan extends Model
     {
         return match ($this->status_pembayaran) {
             'belum_dibayar' => 'Belum Dibayar',
+            'menunggu_konfirmasi' => 'Menunggu Konfirmasi',
             'lunas' => 'Lunas',
             default => '-',
         };
